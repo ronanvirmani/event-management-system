@@ -1,14 +1,15 @@
 package services
 
 import (
-    "bytes"
-    "fmt"
-    "mime/multipart"
-    "os"
+	"bytes"
+	"fmt"
+	"mime/multipart"
+	"os"
 
-    "github.com/aws/aws-sdk-go/aws"
-    "github.com/aws/aws-sdk-go/aws/session"
-    "github.com/aws/aws-sdk-go/service/s3"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3"
+	_ "github.com/ronanvirmani/event-management-system/backend/config"
 )
 
 func UploadFileToS3(file multipart.File, fileHeader *multipart.FileHeader) (string, error) {
@@ -33,7 +34,6 @@ func UploadFileToS3(file multipart.File, fileHeader *multipart.FileHeader) (stri
         Bucket: aws.String(bucket),
         Key:    aws.String(fileName),
         Body:   bytes.NewReader(buffer),
-        ACL:    aws.String("public-read"),
     })
     if err != nil {
         return "", err

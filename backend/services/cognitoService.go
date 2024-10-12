@@ -1,13 +1,14 @@
 package services
 
 import (
-    "errors"
-    "os"
+	"errors"
+	"os"
 
-    "github.com/aws/aws-sdk-go/aws"
-    "github.com/aws/aws-sdk-go/aws/session"
-    "github.com/aws/aws-sdk-go/service/cognitoidentityprovider"
-    "github.com/ronanvirmani/event-management-system/backend/models"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/cognitoidentityprovider"
+	"github.com/ronanvirmani/event-management-system/backend/models"
+    _ "github.com/ronanvirmani/event-management-system/backend/config"
 )
 
 var svc *cognitoidentityprovider.CognitoIdentityProvider

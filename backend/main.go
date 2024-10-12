@@ -1,21 +1,15 @@
 package main
 
 import (
-    "log"
-    "net/http"
+	"log"
+	"net/http"
 
-    "github.com/gorilla/handlers"
-    "github.com/gorilla/mux"
-    "github.com/joho/godotenv"
-    "github.com/ronanvirmani/event-management-system/backend/routes"
+	"github.com/gorilla/handlers"
+	"github.com/gorilla/mux"
+	"github.com/ronanvirmani/event-management-system/backend/routes"
 )
 
 func main() {
-    // Load environment variables
-    err := godotenv.Load(".env")
-    if err != nil {
-        log.Println("Error loading .env file")
-    }
 
     r := mux.NewRouter()
     routes.RegisterRoutes(r)
