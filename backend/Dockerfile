@@ -1,5 +1,5 @@
 # Use Golang image
-FROM golang:1.16-alpine
+FROM golang:1.23-alpine
 
 # Set working directory
 WORKDIR /app
@@ -21,3 +21,5 @@ EXPOSE 8000
 
 # Command to run the application
 CMD ["./main"]
+
+
