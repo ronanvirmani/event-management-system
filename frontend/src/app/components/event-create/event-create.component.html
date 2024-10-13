@@ -1,0 +1,7 @@
+<form>
+  <input type="text" [(ngModel)]="event.title" name="title" required>
+  <textarea [(ngModel)]="event.description" name="description" required></textarea>
+  <input type="text" [(ngModel)]="event.location" name="location" required>
+  <input type="date" [(ngModel)]="event.date" name="date" required>
+  <button type="submit">Create Event</button>
+</form>

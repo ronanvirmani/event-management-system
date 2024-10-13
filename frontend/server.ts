@@ -1,24 +1,24 @@
+// server.ts
 import { APP_BASE_HREF } from '@angular/common';
-import { CommonEngine } from '@angular/ssr';
+import { renderModule } from '@angular/platform-server';
 import express from 'express';
 import { fileURLToPath } from 'node:url';
 import { dirname, join, resolve } from 'node:path';
-import bootstrap from './src/main.server';
+import { AppServerModule } from './src/app/app.server.module'; // Correct import
+import fs from 'fs'; // Import fs to read HTML files
 
-// The Express app is exported so that it can be used by serverless Functions.
 export function app(): express.Express {
   const server = express();
+
+  // Resolve paths
   const serverDistFolder = dirname(fileURLToPath(import.meta.url));
-  const browserDistFolder = resolve(serverDistFolder, '../browser');
-  const indexHtml = join(serverDistFolder, 'index.server.html');
+  const browserDistFolder = resolve(serverDistFolder, '../browser'); // Adjust if necessary
+  const indexHtmlPath = join(browserDistFolder, 'index.html'); // Ensure this path is correct
 
-  const commonEngine = new CommonEngine();
-
+  // Set the view engine to HTML
   server.set('view engine', 'html');
   server.set('views', browserDistFolder);
 
-  // Example Express Rest API endpoints
-  // server.get('/api/**', (req, res) => { });
   // Serve static files from /browser
   server.get('*.*', express.static(browserDistFolder, {
     maxAge: '1y'
@@ -26,18 +26,26 @@ export function app(): express.Express {
 
   // All regular routes use the Angular engine
   server.get('*', (req, res, next) => {
-    const { protocol, originalUrl, baseUrl, headers } = req;
+    const { originalUrl, baseUrl } = req;
 
-    commonEngine
-      .render({
-        bootstrap,
-        documentFilePath: indexHtml,
-        url: `${protocol}://${headers.host}${originalUrl}`,
-        publicPath: browserDistFolder,
-        providers: [{ provide: APP_BASE_HREF, useValue: baseUrl }],
+    // Read the index.html file
+    fs.readFile(indexHtmlPath, 'utf8', (err, document) => {
+      if (err) {
+        return next(err);
+      }
+
+      // Render the Angular application
+      renderModule(AppServerModule, {
+        url: originalUrl,
+        document: document,
+        extraProviders: [{ provide: APP_BASE_HREF, useValue: baseUrl }],
       })
-      .then((html) => res.send(html))
-      .catch((err) => next(err));
+        .then(html => res.send(html))
+        .catch(error => {
+          console.error('Error during server-side rendering:', error);
+          next(error);
+        });
+    });
   });
 
   return server;
