@@ -1,39 +1,52 @@
-import { Injectable } from '@angular/core';
-import Auth from 'aws-amplify';
+import { Injectable } from "@angular/core";
+import {
+  AuthenticationDetails,
+  CognitoUser,
+  CognitoUserPool,
+} from "amazon-cognito-identity-js";
+import { environment } from "../../environments/environment";
+import { Router } from "@angular/router";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
-export class AuthService {
-  async signUp(username: string, password: string, email: string) {
-    try {
-      const user = await Auth.signUp({
-        username,
-        password,
-        attributes: {
-          email
-        }
-      });
-      console.log({ user });
-    } catch (error) {
-      console.log('error signing up:', error);
-    }
-  }
+export class AuthenticateService {
+  userPool: any;
+  cognitoUser: any;
+  username: string = "";
 
-  async signIn(username: string, password: string) {
-    try {
-      const user = await Auth.signIn(username, password);
-      console.log({ user });
-    } catch (error) {
-      console.log('error signing in', error);
-    }
-  }
+  constructor(private router: Router) {}
 
-  async signOut() {
-    try {
-      await Auth.signOut();
-    } catch (error) {
-      console.log('error signing out:', error);
-    }
+  // Login
+  login(emailaddress: any, password: any) {
+    let authenticationDetails = new AuthenticationDetails({
+      Username: emailaddress,
+      Password: password,
+    });
+
+    let poolData = {
+      UserPoolId: environment.awsAmplifyConfig.Auth.userPoolId,
+      ClientId: environment.awsAmplifyConfig.Auth.userPoolWebClientId,
+    };
+
+    this.username = emailaddress;
+    this.userPool = new CognitoUserPool(poolData);
+    let userData = { Username: emailaddress, Pool: this.userPool };
+    this.cognitoUser = new CognitoUser(userData);
+
+    this.cognitoUser.authenticateUser(authenticationDetails, {
+      onSuccess: (result: any) => {
+        this.router.navigate(["/home"]);
+        console.log("Success Results : ", result);
+      },
+      // First time login attempt
+      newPasswordRequired: () => {
+        this.router.navigate(["/newPasswordRequire"]);
+      },
+      onFailure: (error: any) => {
+        console.log("error", error);
+      },
+    });
   }
+  
 }

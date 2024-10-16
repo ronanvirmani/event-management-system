@@ -34,7 +34,8 @@ Amplify.configure({
     AppRoutingModule,
     AmplifyAuthenticatorModule,
     FormsModule,
-    HttpClientModule
+    HttpClientModule,
+    
   ],
   providers: [
     {

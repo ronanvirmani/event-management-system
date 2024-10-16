@@ -3,7 +3,6 @@ package controllers
 import (
 	"encoding/json"
 	"net/http"
-
 	"github.com/ronanvirmani/event-management-system/backend/services"
 )
 
